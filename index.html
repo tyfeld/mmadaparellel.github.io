@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Training-free Diffusion Acceleration with Bottleneck Sampling>
+  <meta name="keywords" content="VideoTetris">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Training-free Diffusion Acceleration with Bottleneck Sampling</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    .inline-equation {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  </style>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/icon.png">
+
+  <style>  
+    table {  
+      font-family: arial, sans-serif;  
+      border-collapse: collapse;  
+      width: 100%;  
+      border: none;
+      text-align: center;
+      table-layout: fixed;
+    }  
+/*       
+    td, th {  
+      border: 2px solid #F1F4F5;  
+      text-align: left;  
+      padding: 8px;  
+    }   */
+    
+    th, td {
+    padding: 8px;
+    text-align: center;
+    border: none; /* 隐藏边框 */
+    vertical-align: middle;
+    }
+    td {
+      /* height: 180px;
+       */
+      width: 25%;
+      vertical-align: middle;
+    }
+    video {
+    width: 100%; 
+    height: auto;
+    object-fit: cover;
+    }
+    .col-10 {
+    width: 15% !important;
+    }
+    
+    /* td:first-child {
+      width: 10%;  } 
+      */
+    /* tr:nth-child(3n - 1) {  
+      background-color: #F1F4F5;  
+    }  
+
+    tr:nth-child(3n) {  
+      border: 2px solid #FFFFFF;
+    }   */
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Training-free Diffusion Acceleration <br> with Bottleneck Sampling</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://tyfeld.github.io">Ye Tian</a><sup>1*</sup>,</span>
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?hl=en&user=JP14UGgAAAAJ">Xin Xia</a><sup>2*</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?hl=en&user=C_6JH-IAAAAJ">Yuxi Ren</a><sup>2</sup>,</span>
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=EDWUw7gAAAAJ&hl=en">Shanchuan Lin</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?hl=en&user=cswtxw4AAAAJ">Xing Wang</a><sup>2</sup>,</span><br>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?hl=en&user=CVkM9TQAAAAJ">Xuefeng Xiao</a><sup>2</sup><sup>†</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?hl=en&user=T4gqdPkAAAAJ">Yunhai Tong</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://yangling0818.github.io/">Ling Yang</a><sup>1</sup><sup>‡</sup>,</span>
+            <span class="author-block">
+              <a href="https://cuibinpku.github.io/cuibin_cn.html">Bin Cui</a><sup>1</sup><sup>‡</sup>
+            </span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Peking University,</span>
+            <span class="author-block"><sup>2</sup>ByteDance</span>
+            <!-- <span class="author-block"><sup>3</sup>SHI Labs @ Georgia Tech, Oregon & UIUC</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>*</sup>Equal Contribution,</span>
+            <span class="author-block"><sup>†</sup>Project Leader,</span>
+            <span class="author-block"><sup>‡</sup>Corresponding Authors</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              <span class="link-block">
+                <!-- FIX THE LINK -->
+                <a href="https://arxiv.org/abs/2503.18940"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=GDPP0zmFmQg"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/tyfeld/Bottleneck-Sampling"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Demo Link. -->
+              <!-- <span class="link-block">
+                <a href="https://huggingface.co/spaces/PAIR/StreamingT2V"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <img src="./static/images/hf.png" alt="Button Image">
+                  </span>
+                  <span>Demo</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img id="teaser" autoplay muted loop playsinline height="100%" src="./static/images/main.png" style="width:100%;height:100%;">
+      <p class="subtitle has-text-centered">
+        <b><span class="dnerf">Bottleneck-Sampling</span></b> a training-free framework that leverages low-resolution priors to reduce computational overhead while preserving output fidelity. It maintains comparable performance with a 2.5 - 3 &times; acceleration ratio in a training-free manner.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section b-section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Diffusion models have demonstrated remarkable capabilities in visual content generation but remain challenging to deploy due to their high computational cost during inference. This computational burden primarily arises from the quadratic complexity of self-attention with respect to image or video resolution. While existing acceleration methods often compromise output quality or necessitate costly retraining, we observe that most diffusion models are pre-trained at lower resolutions, presenting an opportunity to exploit these low-resolution priors for more efficient inference without degrading performance. In this work, we introduce <b><span class="dnerf">Bottleneck Sampling</span></b>, a training-free framework that leverages low-resolution priors to reduce computational overhead while preserving output fidelity. Bottleneck Sampling follows a high-low-high denoising workflow: it performs high-resolution denoising in the initial and final stages while operating at lower resolutions in intermediate steps. To mitigate aliasing and blurring artifacts, we further refine the resolution transition points and adaptively shift the denoising timesteps at each stage. We evaluate Bottleneck Sampling on both image and video generation tasks, where extensive experiments demonstrate that it accelerates inference by up to 3 &times; for image generation and 2.5 &times; for video generation, all while maintaining output quality comparable to the standard full-resolution sampling process across multiple evaluation metrics.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="Method">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Method</h2>
+    <section class="hero method">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <img id="method" autoplay muted loop playsinline height="100%" src="./static/images/method.png" style="width:100%;height:80%;">
+          <p>
+            Overall pipeline of our <b><span class="dnerf"></span>Bottleneck Sampling</span></b>. The process consists of three stages: (i) High-Resolution Denoising to preserve semantic information, (ii) Low-Resolution Denoising to improve efficiency, and (iii) High-Resolution Denoising to restore fine details. Images generated by FLUX.1-dev using the prompt: "2D cartoon,Diagonal composition, Medium close-up, a whole body of a classical doll being held by a hand, the doll of a young boy with white hair dressed in purple, He has pale skin and white eyes."
+          </p>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- <section class="section b-section" id="Method-Detailed">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Spatio-Temporal Compositional Diffusion</h2>
+    <section class="hero method">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <img id="method" autoplay muted loop playsinline height="100%" src="./static/images/stcd.png" style="width:100%;height:80%;">
+            <p>
+              Illustration of <b><span class="dnerf">Spatio-Temporal Compositional Diffusion</span></b>. For a given story "A little dolphin starts exploring an old city under the sea,  she first found a green turtle at the bottom, then her huge father comes along to accompany her at the right side.", we first decompose it temporally to Text Prompt #1, #2 and #3, then we decompose each of them spatially to compute each sub-region's cross attention maps. Finally, we compose them spatio-temporally to form a natural story.
+            </p>
+        </div>
+      </div>
+    </section>
+  </div> -->
+</section>
+
+<section class="section b-section" id="Results1">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Results on Image Generation</h2>
+    <section class="hero method">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <img id="method" autoplay muted loop playsinline height="100%" src="./static/images/exp1.png" style="width:100%;height:80%;">
+          <p>
+            Qualitative comparison of our Bottleneck Sampling with FLUX.1-dev. Our method achieves up tp 3&times; speedup while maintaining or improving visual fidelity. Incorrect text rendering and anatomical inconsistencies are highlighted with different colors.
+          </p>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="section " id="Results1">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Results on Video Generation</h2>
+    <section class="hero method">
+    <div class="container is-max-desktop">
+    <div class="hero-body">
+
+    <!-- <h3 class="title">1200 FRAMES @ 2 MINUTES</h3> -->
+    <table class="center">
+      <colgroup>
+        <col class="col-10">
+        <col width="auto">
+        <col width="auto">
+      </colgroup>
+      <!-- <tr><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr>
+        <th>AnimateDiff</th>
+        <th>Runway Gen-2</th>
+        <th>Pika Labs</th>
+        <th>VideoCrafter</th>
+        <th><b>VideoTetris</b></th>
+      </tr> -->
+      <tr>
+        <td class="col-10" style="vertical-align: middle"> HunyuanVideo </td>
+        <td><video src="./static/videos/hunyuan/cat.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/hunyuan/old.mp4" controls autoplay muted loop playsinline></video></td>
+        <!-- <td><video src="./static/videos/short/gen2.mp4" controls autoplay muted loop playsinline></video></td> -->
+      </tr>
+      <tr>
+        <td class="col-10" style="vertical-align: middle;width: 10%;"> HunyuanVideo 40% steps </td>
+        <td><video src="./static/videos/0.5huanyuan/cat.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/0.5huanyuan/old.mp4" controls autoplay muted loop playsinline></video></td>
+      </tr>
+
+      <tr>
+        <td class="col-10" style="vertical-align: middle"><b>Bottleneck Sampling</b></td>
+        <td><video src="./static/videos/bs/cat.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/bs/old.mp4" controls autoplay muted loop playsinline></video></td>
+        <!-- <td><video src="./static/videos/short/cat_dog_os.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/short/sponge_baby_os.mp4" controls autoplay muted loop playsinline></video></td> -->
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align:center;">
+            <b><i><span style="color: greenyellow;">A cat is walking on the grass.</span></i></b>
+        </td>
+        <td style="text-align:center;">
+          <b><i><span style="color: grey; font-size: smaller;">At dusk, an elderly couple holding hands stroll along the beach, with the waves gently lapping at the shore and the afterglow of the setting sun shining on them. The entire scene creates a tranquil atmosphere.
+          </span></i></b>
+        </td>
+        <!-- <td style="text-align:center;">
+          <b><i><span style="color:saddlebrown;">A cute brown dog on the left </span>and <span style="color:rgb(197, 181, 34);">a sleepy cat on the right</span> are napping in the sun.
+          </i></b>
+        </td>
+        <td style="text-align:center;">
+          <b><i><span style="color: darkorange;">A talking sponge on the left</span> and <span style="color: brown;"> a superhero baby on the right </span>are having an adventure.
+          </i></b> -->
+        </td>
+
+       </tr>
+      <!-- <tr><td></td><td></td><td></td><td></td></tr> -->
+    </table>
+
+    <!-- insert text:A brave knight and a wise wizard are journeying through a forest. here -->
+    <!-- <p>A brave knight and a wise wizard are journeying through a forest.
+    </p> -->
+
+  </div></div></section>
+
+  <section class="hero method">
+    <div class="container is-max-desktop">
+    <div class="hero-body">
+
+    <!-- <h3 class="title">1200 FRAMES @ 2 MINUTES</h3> -->
+    <table class="center">
+      <colgroup>
+        <col class="col-10">
+        <col width="auto">
+        <col width="auto">
+      </colgroup>
+      <!-- <tr><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr>
+        <th>AnimateDiff</th>
+        <th>Runway Gen-2</th>
+        <th>Pika Labs</th>
+        <th>VideoCrafter</th>
+        <th><b>VideoTetris</b></th>
+      </tr> -->
+      <tr>
+        <td class="col-10" style="vertical-align: middle"> HunyuanVideo </td>
+        <td><video src="./static/videos/hunyuan/apple.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/hunyuan/ant.mp4" controls autoplay muted loop playsinline></video></td>
+        <!-- <td><video src="./static/videos/short/gen2.mp4" controls autoplay muted loop playsinline></video></td> -->
+      </tr>
+      <tr>
+        <td class="col-10" style="vertical-align: middle;width: 10%;"> HunyuanVideo 40% steps </td>
+        <td><video src="./static/videos/0.5huanyuan/apple.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/0.5huanyuan/ant.mp4" controls autoplay muted loop playsinline></video></td>
+      </tr>
+
+      <tr>
+        <td class="col-10" style="vertical-align: middle"><b>Bottleneck Sampling</b></td>
+        <td><video src="./static/videos/bs/apple.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/bs/ant.mp4" controls autoplay muted loop playsinline></video></td>
+        <!-- <td><video src="./static/videos/short/cat_dog_os.mp4" controls autoplay muted loop playsinline></video></td>
+        <td><video src="./static/videos/short/sponge_baby_os.mp4" controls autoplay muted loop playsinline></video></td> -->
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align:center;">
+            <b><i>A wizard is waving a magic wand, chanting spells, controlling an apple to fly into the air. The color of the apple changes from <span style="color: greenyellow;">green</span> to <span style="color: red;">red</span>.
+            </span></i></b>
+        </td>
+        <td style="text-align:center;">
+          <b><i><span style="color: pink;">There is a mirror on the pink dressing table, and <span style="color: darkcyan;">below </span>the mirror, an ant is slowly crawling on the desktop.
+          </span></i></b>
+        </td>
+        <!-- <td style="text-align:center;">
+          <b><i><span style="color:saddlebrown;">A cute brown dog on the left </span>and <span style="color:rgb(197, 181, 34);">a sleepy cat on the right</span> are napping in the sun.
+          </i></b>
+        </td>
+        <td style="text-align:center;">
+          <b><i><span style="color: darkorange;">A talking sponge on the left</span> and <span style="color: brown;"> a superhero baby on the right </span>are having an adventure.
+          </i></b> -->
+        </td>
+
+       </tr>
+      <!-- <tr><td></td><td></td><td></td><td></td></tr> -->
+    </table>
+
+    <!-- insert text:A brave knight and a wise wizard are journeying through a forest. here -->
+    <!-- <p>A brave knight and a wise wizard are journeying through a forest.
+    </p> -->
+
+  </div></div></section>
+
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{tian2025bottlenecksampling,
+      title={Training-free Diffusion Acceleration with Bottleneck Sampling},
+      author={Tian, Ye and Xia, Xin and Ren, Yuxi and Lin, Shanchuan and Wang, Xing and Xiao, Xuefeng and Tong, Yunhai and Yang, Ling and Cui, Bin},
+      journal={arXiv preprint arXiv:2503.18940},
+      year={2025}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <!-- FIX THE LINK -->
+      <a class="icon-link" href="https://arxiv.org/abs/2503.18940">
+        <i class="ai ai-arxiv"></i>
+      </a>
+      <!-- <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled> -->
+      <a class="icon-link" href="https://github.com/tyfeld/Bottleneck-Sampling" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website adapted from the following <a href="https://github.com/nerfies/nerfies.github.io">template</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+</body>
+</html>
