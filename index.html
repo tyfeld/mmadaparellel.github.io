@@ -191,22 +191,22 @@
               </span>
               <!-- Hugging Face Link - MMaDA-Parallel. -->
               <span class="link-block">
-                <a href="https://huggingface.co/tyfeld/MMaDA-Parallel"
+                <a href="https://huggingface.co/tyfeld/MMaDA-Parallel-A"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       🤗
                   </span>
-                  <span>MMaDA-Parallel*</span>
+                  <span>MMaDA-Parallel-A</span>
                   </a>
               </span>
               <!-- Hugging Face Link - MMaDA-Parallel. -->
               <span class="link-block">
-                <a href="https://huggingface.co/tyfeld/MMaDA-Parallel"
+                <a href="https://huggingface.co/tyfeld/MMaDA-Parallel-M"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       🤗
                   </span>
-                  <span>MMaDA-Parallel</span>
+                  <span>MMaDA-Parallel-M</span>
                   </a>
               </span>
               <!-- Hugging Face Link - ParaBench. -->
@@ -342,13 +342,13 @@
 
 <section class="section" id="QualitativeResults">
   <div class="container is-max-desktop content">
-    <h2 class="title">MMaDA-Parallel: Qualitative Results</h2>
+    <h2 class="title">MMaDA-Parallel-M: Qualitative Results</h2>
     <section class="hero method">
       <div class="container is-max-desktop">
         <div class="hero-body">
           <img id="method" autoplay muted loop playsinline height="100%" src="./static/images/results_01.png" style="width:100%;height:80%;">
           <p>
-            <b>Qualitative comparison with Bagel (w/ think).</b>
+            <b>Qualitative comparison with Bagel (w/ think) on MMaDA-Parallel-M.</b>
             MMaDA-Parallel produces more precise and descriptive reasoning traces, which leads to superior visual fidelity.
             Our model accurately renders complex instructions like "three individuals" and "two clock faces" where Bagel often fails, demonstrating stronger compositional abilities.
           </p>
@@ -361,15 +361,15 @@
 
 <section class="section b-section" id="QualitativeResults2 ">
   <div class="container is-max-desktop content">
-    <h2 class="title">MMaDA-Parallel*: Qualitative Results</h2>
+    <h2 class="title">MMaDA-Parallel-A: Qualitative Results</h2>
     <section class="hero method">
       <div class="container is-max-desktop">
         <div class="hero-body">
           <img id="method" autoplay muted loop playsinline height="100%" src="./static/images/lumina_01.png" style="width:100%;height:80%;">
           <p>
-            <b>Qualitative comparison between MMaDA-Parallel* and Bagel (w/ think), trained from Lumina-DiMOO.</b>
+            <b>Qualitative comparison between MMaDA-Parallel-A and Bagel (w/ think), trained from Lumina-DiMOO.</b>
             To validate the scalability of our method, we extend our post-training framework to <b>Lumina-DiMOO</b>, which shares a similar architecture with MMaDA but benefits from larger-scale data training.
-            After applying our Parallel framework and ParaRL post-training, <b>MMaDA-Parallel*</b> surpasses <i>Bagel</i> and achieves new state-of-the-art performance in thinking-aware synthesis, demonstrating the effectiveness and scalability of our approach.
+            After applying our Parallel framework and ParaRL post-training, <b>MMaDA-Parallel-A</b> surpasses <i>Bagel</i> and achieves new state-of-the-art performance in thinking-aware synthesis, demonstrating the effectiveness and scalability of our approach.
           </p>
         </div>
       </div>
@@ -388,7 +388,7 @@
         <p>
           <b>Main results on ParaBench.</b> Evaluation across all editing and generation tasks.
           Our proposed method, <b>MMaDA-Parallel (w/ ParaRL)</b>, achieves the highest <b>Output Alignment (59.8)</b> among all open-source models.
-          This is a <b>6.9% improvement</b> over the state-of-the-art model, Bagel (52.9), confirming the effectiveness of our parallel framework and trajectory-level optimization. MMaDA-Parallel* achieves even better performance than Bagel (w/ think), demonstrating the scalability of our approach.
+          This is a <b>6.9% improvement</b> over the state-of-the-art model, Bagel (52.9), confirming the effectiveness of our parallel framework and trajectory-level optimization. MMaDA-Parallel-A achieves even better performance than Bagel (w/ think), demonstrating the scalability of our approach.
         </p>
     </div></div></section>
   </div>
